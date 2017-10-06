@@ -8,5 +8,6 @@ package com.yxhuang.store;
 
 public enum StoreType {
     String,
-    Integer
+    Integer,
+    SColor
 }

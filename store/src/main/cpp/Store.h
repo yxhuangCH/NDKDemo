@@ -13,12 +13,14 @@
 
 typedef enum {
     StoreType_String,
-    StoreType_Integer
+    StoreType_Integer,
+    StoreType_Color
 } StoreType;
 
 typedef union {
     int32_t mInteger;
     char* mString;
+    jobject mSColor;
 } StoreValue;
 
 typedef struct {

@@ -37,6 +37,9 @@ void releaseEntryValue(JNIEnv* pEnv, StoreEntry* pEntry){
         case StoreType_String:
             delete pEntry->mValue.mString;
             break;
+        case StoreType_Color:
+            pEnv->DeleteGlobalRef(pEntry->mValue.mSColor);
+            break;
     }
 }
 
@@ -109,10 +112,26 @@ Java_com_yxhuang_store_Store_setInteger(JNIEnv* pEnv, jobject pThis, jstring pKe
     }
 };
 
-/*
- * Class:     com_yxhuang_store_Store
- * Method:    setInteger
- * Signature: (Ljava/lang/String;I)V
- */
-JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setInteger
-        (JNIEnv *, jobject, jstring, jint);
+
+JNIEXPORT void JNICALL
+Java_com_yxhuang_store_Store_setColor(JNIEnv* pEnv, jobject pThis, jstring pKey, jobject pColor){
+    // Save the SColor reference in the store
+    StoreEntry* entry = allocateEntry(pEnv, &gStore, pKey);
+    if (entry != NULL){
+        entry->mType = StoreType_Color;
+        // 防止被回收，需要一个全局引用, 但是主要要释放
+        entry->mValue.mSColor = pEnv->NewGlobalRef(pColor);
+    }
+}
+
+
+JNIEXPORT jobject JNICALL
+Java_com_yxhuang_store_Store_getSColor(JNIEnv* pEnv, jobject pThis, jstring pKey){
+    StoreEntry* entry = findEntry(pEnv, &gStore, pKey);
+    if (isEntryValid(pEnv, entry, StoreType_Color)){
+        return entry->mValue.mSColor;
+    } else{
+        return NULL;
+    }
+
+}

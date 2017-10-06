@@ -47,6 +47,23 @@ JNIEXPORT jint JNICALL Java_com_yxhuang_store_Store_getInteger
 JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setInteger
         (JNIEnv *, jobject, jstring, jint);
 
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    setColor
+ * Signature: (Ljava/lang/String;Lcom/yxhuang/store/SColor;)V
+ */
+JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setColor
+        (JNIEnv *, jobject, jstring, jobject);
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    getSColor
+ * Signature: (Ljava/lang/String;)Lcom/yxhuang/store/SColor;
+ */
+JNIEXPORT jobject JNICALL Java_com_yxhuang_store_Store_getSColor
+        (JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif

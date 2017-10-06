@@ -18,7 +18,12 @@ public class Store {
 
     public native void setString(String pKey, String pString);
 
+
     public native int getInteger(String pKey);
 
     public native void setInteger(String pkey, int pInt);
+
+    // Store part 7
+    public native void setColor(String key, SColor color);
+    public native SColor getSColor(String key);
 }

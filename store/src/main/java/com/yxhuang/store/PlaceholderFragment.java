@@ -52,7 +52,7 @@ public class PlaceholderFragment extends Fragment {
         mUIKeyEdit = (EditText) mRootView.findViewById(R.id.uiKeyEdit);
         mUIValueEdit = (EditText) mRootView.findViewById(R.id.uiValueEdit);
 
-        ArrayAdapter<StoreType> adapter = new ArrayAdapter<StoreType>(getActivity(),
+        ArrayAdapter<StoreType> adapter = new ArrayAdapter<>(getActivity(),
                                                 android.R.layout.simple_spinner_item,
                                                 StoreType.values());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -91,7 +91,9 @@ public class PlaceholderFragment extends Fragment {
             case Integer:
                 mUIValueEdit.setText(Integer.toString(mStore.getInteger(key)));
                 break;
-
+            case SColor:
+                mUIValueEdit.setText(mStore.getSColor(key).toString());
+                break;
         }
     }
 
@@ -112,7 +114,9 @@ public class PlaceholderFragment extends Fragment {
                     break;
                 case Integer:
                     mStore.setInteger(key, Integer.parseInt(value));
-
+                case SColor:
+                    mStore.setColor(key, new SColor(value));
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
