@@ -88,6 +88,9 @@ public class PlaceholderFragment extends Fragment {
             case String:
                 mUIValueEdit.setText(mStore.getString(key));
                 break;
+            case Integer:
+                mUIValueEdit.setText(Integer.toString(mStore.getInteger(key)));
+                break;
 
         }
     }
@@ -107,6 +110,8 @@ public class PlaceholderFragment extends Fragment {
                 case String:
                     mStore.setString(key, value);
                     break;
+                case Integer:
+                    mStore.setInteger(key, Integer.parseInt(value));
 
             }
         } catch (Exception e) {

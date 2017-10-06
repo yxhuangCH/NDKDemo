@@ -7,5 +7,6 @@ package com.yxhuang.store;
  */
 
 public enum StoreType {
-    String
+    String,
+    Integer
 }

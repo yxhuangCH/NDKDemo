@@ -88,3 +88,31 @@ Java_com_yxhuang_store_Store_setString(JNIEnv* pEnv, jobject pThis, jstring pKey
         entry->mValue.mString[stringLength] = '\0';
     }
 }
+
+JNIEXPORT jint JNICALL
+Java_com_yxhuang_store_Store_getInteger(JNIEnv* pEnv, jobject pThis, jstring pKey){
+    StoreEntry* entry = findEntry(pEnv, &gStore, pKey);
+    if(isEntryValid(pEnv, entry, StoreType_Integer)){
+        return entry->mValue.mInteger;
+    } else{
+        return 0;
+    }
+};
+
+
+JNIEXPORT void JNICALL
+Java_com_yxhuang_store_Store_setInteger(JNIEnv* pEnv, jobject pThis, jstring pKey, jint pInteger){
+    StoreEntry* entry = allocateEntry(pEnv, &gStore, pKey);
+    if (entry != NULL){
+        entry->mType = StoreType_Integer;
+        entry->mValue.mInteger = pInteger;
+    }
+};
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    setInteger
+ * Signature: (Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setInteger
+        (JNIEnv *, jobject, jstring, jint);

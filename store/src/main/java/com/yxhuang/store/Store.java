@@ -17,4 +17,8 @@ public class Store {
     public native String getString(String pKey);
 
     public native void setString(String pKey, String pString);
+
+    public native int getInteger(String pKey);
+
+    public native void setInteger(String pkey, int pInt);
 }
