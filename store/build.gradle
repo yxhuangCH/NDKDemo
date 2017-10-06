@@ -26,6 +26,11 @@ android {
             abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
         }
 
+        // 指定java 版本需要
+        jackOptions {
+            enabled true
+        }
+
     }
     buildTypes {
         release {
@@ -41,14 +46,27 @@ android {
         }
     }
 
+    // 解决问题 Error:Conflict with dependency 'com.google.code.findbugs:jsr305' in project ':app'.
+    // Resolved versions for app (3.0.1) and test app (2.0.1) differ.
+    // See http://g.co/androidstudio/app-test-app-conflict for details.
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:2.0.1'
+    }
+
+    //指定java版本
+    allprojects {
+        sourceCompatibility = 1.7
+        targetCompatibility = 1.7
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
+    compile 'com.google.guava:guava:23.1-jre'
 }

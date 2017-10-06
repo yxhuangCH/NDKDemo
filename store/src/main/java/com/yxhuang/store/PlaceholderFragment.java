@@ -13,6 +13,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -94,6 +101,15 @@ public class PlaceholderFragment extends Fragment {
             case SColor:
                 mUIValueEdit.setText(mStore.getSColor(key).toString());
                 break;
+            case IntegerArray:
+                mUIValueEdit.setText(Ints.join(";", mStore.getIntegerArray(key)));
+                break;
+            case StringArray:
+                mUIValueEdit.setText(Joiner.on(";").join(mStore.getStringArray(key)));
+                break;
+            case ColorArray:
+                mUIValueEdit.setText(Joiner.on(";").join(mStore.getColorArray(key)));
+                break;
         }
     }
 
@@ -117,6 +133,29 @@ public class PlaceholderFragment extends Fragment {
                 case SColor:
                     mStore.setColor(key, new SColor(value));
                     break;
+                case IntegerArray:
+                    mStore.setIntegerArray(key, Ints.toArray(stringToList(new Function<String, Integer>() {
+                        @javax.annotation.Nullable
+                        @Override
+                        public Integer apply(@javax.annotation.Nullable String input) {
+                            return Integer.parseInt(input);
+                        }
+                    }, value)));
+                    break;
+                case StringArray:
+                    String[] stringArray = value.split(";");
+                    mStore.setStringArray(key, stringArray);
+                    break;
+                case ColorArray:
+                    List<SColor> idList = stringToList(new Function<String, SColor>() {
+                        @javax.annotation.Nullable
+                        @Override
+                        public SColor apply(@javax.annotation.Nullable String input) {
+                            return new SColor(input);
+                        }
+                    }, value);
+                    mStore.setColorArray(key, idList.toArray(new SColor[idList.size()]));
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,5 +171,11 @@ public class PlaceholderFragment extends Fragment {
     private void updateContent(){
         int numEntries = mStore.getCount();
         mTvContent.setText(String.format("Store  %S", numEntries));
+    }
+
+    private <TType>List<TType> stringToList(Function<String, TType> pConversion, String pValue){
+        String[] splitArray = pValue.split(";");
+        List<String> splitList = Arrays.asList(splitArray);
+        return Lists.transform(splitList, pConversion);
     }
 }

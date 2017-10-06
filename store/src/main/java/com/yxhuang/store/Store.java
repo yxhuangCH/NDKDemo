@@ -26,4 +26,14 @@ public class Store {
     // Store part 7
     public native void setColor(String key, SColor color);
     public native SColor getSColor(String key);
+
+    // Store part 8
+    public native void setIntegerArray(String pKey, int[] pIntArray);
+    public native int[] getIntegerArray(String pKey);
+
+    public native void setStringArray(String pKey, String[] pStringArray);
+    public native String[] getStringArray(String pKey);
+
+    public native void setColorArray(String pKey, SColor[] pColorArray);
+    public native SColor[] getColorArray(String pKey);
 }

@@ -9,5 +9,8 @@ package com.yxhuang.store;
 public enum StoreType {
     String,
     Integer,
-    SColor
+    SColor,
+    IntegerArray,
+    StringArray,
+    ColorArray
 }

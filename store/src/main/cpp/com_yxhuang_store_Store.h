@@ -64,6 +64,53 @@ JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setColor
 JNIEXPORT jobject JNICALL Java_com_yxhuang_store_Store_getSColor
         (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    setIntegerArray
+ * Signature: (Ljava/lang/String;[I)V
+ */
+JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setIntegerArray
+        (JNIEnv *, jobject, jstring, jintArray);
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    getIntegerArray
+ * Signature: (Ljava/lang/String;)[I
+ */
+JNIEXPORT jintArray JNICALL Java_com_yxhuang_store_Store_getIntegerArray
+        (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    setStringArray
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setStringArray
+        (JNIEnv *, jobject, jstring, jobjectArray);
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    getStringArray
+ * Signature: (Ljava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_yxhuang_store_Store_getStringArray
+        (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    setColorArray
+ * Signature: (Ljava/lang/String;[Lcom/yxhuang/store/SColor;)V
+ */
+JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setColorArray
+        (JNIEnv *, jobject, jstring, jobjectArray);
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    getColorArray
+ * Signature: (Ljava/lang/String;)[Lcom/yxhuang/store/SColor;
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_yxhuang_store_Store_getColorArray
+        (JNIEnv *, jobject, jstring);
 #ifdef __cplusplus
 }
 #endif

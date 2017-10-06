@@ -6,6 +6,7 @@
 #define NDKPROJECT_STORE_H
 
 #include <cstdint>
+#include <cstdint>
 #include <stdint.h>
 #include "jni.h"
 
@@ -14,19 +15,26 @@
 typedef enum {
     StoreType_String,
     StoreType_Integer,
-    StoreType_Color
+    StoreType_Color,
+    StoreType_IntegerArray,
+    StoreType_StringArray,
+    StoreType_ColorArray
 } StoreType;
 
 typedef union {
     int32_t mInteger;
     char* mString;
     jobject mSColor;
+    int32_t* mIntegerArray;
+    char** mStringArray;
+    jobject* mSColorArray;
 } StoreValue;
 
 typedef struct {
     char* mKey;
     StoreType mType;
     StoreValue mValue;
+    int32_t mLength;
 } StoreEntry;
 
 typedef struct {

@@ -5,10 +5,28 @@
 #include <string.h>
 #include "com_yxhuang_store_Store.h"
 #include "Store.h"
+#include <cstdint>
 
 static Store gStore;
+static jclass StringClass;
+static jclass ColorClass;
 
 JNIEXPORT jint JNI_OnLoad(JavaVM* pVM, void* reserved){
+    JNIEnv *env;
+    if (pVM->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK){
+        abort();
+    }
+    jclass StringClassTmp = env->FindClass("java/lang/String");
+    if (StringClassTmp == NULL) {
+        abort();
+    }
+    StringClass = (jclass) env->NewGlobalRef(StringClassTmp);
+    jclass ColorClassTmp = env->FindClass("com/yxhuang/store/SColor");
+    if (ColorClassTmp == NULL){
+        abort();
+    }
+    ColorClass = (jclass) env->NewGlobalRef(ColorClassTmp);
+    env->DeleteLocalRef(ColorClassTmp);
     // Store initialization
     gStore.mLength = 0;
     return JNI_VERSION_1_6;
@@ -39,6 +57,23 @@ void releaseEntryValue(JNIEnv* pEnv, StoreEntry* pEntry){
             break;
         case StoreType_Color:
             pEnv->DeleteGlobalRef(pEntry->mValue.mSColor);
+            break;
+        case StoreType_IntegerArray:
+            delete[] pEntry->mValue.mIntegerArray;
+            break;
+        case StoreType_StringArray:
+            // Destroys every C string pointed by the String array before releasing it.
+            for (int32_t i = 0; i < pEntry->mLength; ++i) {
+                delete pEntry->mValue.mStringArray[i];
+            }
+            delete[] pEntry->mValue.mStringArray;
+            break;
+        case StoreType_ColorArray:
+            // Unreferences every Id before releasing the Id array.
+            for (int32_t i = 0; i < pEntry->mLength; ++i) {
+                pEnv->DeleteGlobalRef(pEntry->mValue.mSColorArray[i]);
+            }
+            delete[] pEntry->mValue.mSColorArray;
             break;
     }
 }
@@ -130,6 +165,112 @@ Java_com_yxhuang_store_Store_getSColor(JNIEnv* pEnv, jobject pThis, jstring pKey
     StoreEntry* entry = findEntry(pEnv, &gStore, pKey);
     if (isEntryValid(pEnv, entry, StoreType_Color)){
         return entry->mValue.mSColor;
+    } else{
+        return NULL;
+    }
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_yxhuang_store_Store_setIntegerArray(JNIEnv* pEnv, jobject pThis, jstring pKey, jintArray pIntegerArray){
+    StoreEntry* entry = allocateEntry(pEnv, &gStore, pKey);
+    if (entry != NULL){
+        jsize length = pEnv->GetArrayLength(pIntegerArray);
+        int32_t* array = new int32_t[length];
+        pEnv->GetIntArrayRegion(pIntegerArray, 0, length, array);
+
+        entry->mType = StoreType_IntegerArray;
+        entry->mLength = length;
+        entry->mValue.mIntegerArray = array;
+    }
+}
+
+
+JNIEXPORT jintArray JNICALL
+Java_com_yxhuang_store_Store_getIntegerArray(JNIEnv* pEnv, jobject pThis, jstring pKey){
+    StoreEntry* entry = findEntry(pEnv, &gStore, pKey);
+    if (isEntryValid(pEnv, entry, StoreType_IntegerArray)){
+        jintArray javaArray = pEnv->NewIntArray(entry->mLength);
+        pEnv->SetIntArrayRegion(javaArray, 0, entry->mLength, entry->mValue.mIntegerArray);
+        return javaArray;
+    } else{
+        return NULL;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_yxhuang_store_Store_setStringArray(JNIEnv* pEnv, jobject pThis, jstring pKey, jobjectArray pStringArray){
+    StoreEntry* entry = allocateEntry(pEnv, &gStore, pKey);
+    if (entry != NULL){
+        jsize length = pEnv->GetArrayLength(pStringArray);
+        char** array = new char*[length];
+        for (int32_t i = 0; i < length; ++i) {
+            jstring string = (jstring) pEnv->GetObjectArrayElement(pStringArray, i);
+            jsize stringLength = pEnv->GetStringUTFLength(string);
+            array[i] = new char[stringLength + 1];
+            // Directly copies  the Java string into our new C buffer.
+            pEnv->GetStringUTFRegion(string, 0, stringLength, array[i]);
+            array[i][stringLength] = '\0';
+            pEnv->DeleteLocalRef(string);
+        }
+        entry->mType = StoreType_StringArray;
+        entry->mLength = length;
+        entry->mValue.mStringArray = array;
+    }
+}
+
+
+JNIEXPORT jobjectArray JNICALL Java_com_yxhuang_store_Store_getStringArray(JNIEnv* pEnv, jobject pThis, jstring pKey){
+    StoreEntry* entry = findEntry(pEnv, &gStore, pKey);
+    if (isEntryValid(pEnv, entry, StoreType_StringArray)){
+        // An array of String in Java si in fact an array of object.
+        jobjectArray javaArray = pEnv->NewObjectArray(entry->mLength, StringClass, NULL);
+        for (int32_t i = 0; i < entry->mLength; ++i) {
+            jstring string = pEnv->NewStringUTF(entry->mValue.mStringArray[i]);
+            pEnv->SetObjectArrayElement(javaArray, i, string);
+            pEnv->DeleteLocalRef(string);
+        }
+        return javaArray;
+    } else{
+        return NULL;
+    }
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_yxhuang_store_Store_setColorArray(JNIEnv* pEnv, jobject pThis, jstring pKey, jobjectArray pColorArray){
+    StoreEntry* entry = allocateEntry(pEnv, &gStore, pKey);
+    if (entry != NULL){
+        // 获取 array 的长度
+        jsize length = pEnv->GetArrayLength(pColorArray);
+        jobject* array = new jobject[length];
+        // File the C array with a copy of each input Java Color
+        for (int32_t i = 0; i < length; ++i) {
+            // GetObjectArrayElement puts one single object reference from a java array.
+            // The returned references is local.
+            jobject localColor = pEnv->GetObjectArrayElement(pColorArray, i);
+            array[i] = pEnv->NewGlobalRef(localColor);
+            pEnv->DeleteLocalRef(localColor);
+        }
+        entry->mType = StoreType_ColorArray;
+        entry->mLength = length;
+        entry->mValue.mSColorArray = array;
+    }
+}
+
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_yxhuang_store_Store_getColorArray(JNIEnv* pEnv, jobject pThis, jstring pKey){
+    StoreEntry* entry = findEntry(pEnv, &gStore, pKey);
+    if (isEntryValid(pEnv, entry, StoreType_ColorArray)){
+        // 创建新的 object array
+        jobjectArray javaArray = pEnv->NewObjectArray(entry->mLength, ColorClass, NULL);
+        for (int32_t i = 0; i < entry->mLength; ++i) {
+            // SetObjectArrayElement() put one single object reference into a java array.
+            // A Global reference is created implicitly.
+            pEnv->SetObjectArrayElement(javaArray, i, entry->mValue.mSColorArray[i]);
+        }
+        return javaArray;
     } else{
         return NULL;
     }
