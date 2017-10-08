@@ -2,6 +2,7 @@ package com.yxhuang.store;
 
 import com.yxhuang.store.exception.InvalidTypeException;
 import com.yxhuang.store.exception.NotExistingKeyException;
+import com.yxhuang.store.listener.StoreListener;
 
 /**
  * Created by yxhuang
@@ -9,10 +10,16 @@ import com.yxhuang.store.exception.NotExistingKeyException;
  * Description:
  */
 
-public class Store {
+public class Store implements StoreListener {
 
     static {
         System.loadLibrary("com_yxhuang_Store");
+    }
+
+    private StoreListener mListener;
+
+    public Store(StoreListener listener) {
+        mListener = listener;
     }
 
     public native int getCount();
@@ -39,4 +46,19 @@ public class Store {
 
     public native void setColorArray(String pKey, SColor[] pColorArray);
     public native SColor[] getColorArray(String pKey) throws NotExistingKeyException, InvalidTypeException;
+
+    @Override
+    public void onSuccess(int pValue) {
+        mListener.onSuccess(pValue);
+    }
+
+    @Override
+    public void onSuccess(String pValue) {
+        mListener.onSuccess(pValue);
+    }
+
+    @Override
+    public void onSuccess(SColor pValue) {
+        mListener.onSuccess(pValue);
+    }
 }

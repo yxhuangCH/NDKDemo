@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import com.yxhuang.store.exception.InvalidTypeException;
 import com.yxhuang.store.exception.NotExistingKeyException;
+import com.yxhuang.store.listener.StoreListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +31,8 @@ import java.util.regex.Pattern;
  * Description:
  */
 
-public class PlaceholderFragment extends Fragment {
-    private Store mStore = new Store();
+public class PlaceholderFragment extends Fragment implements StoreListener{
+    private Store mStore;
 
     private View mRootView;
     private TextView mTvContent;
@@ -43,6 +44,13 @@ public class PlaceholderFragment extends Fragment {
 
     public PlaceholderFragment() {
 
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mStore = new Store(this);
     }
 
     @Nullable
@@ -187,5 +195,20 @@ public class PlaceholderFragment extends Fragment {
         String[] splitArray = pValue.split(";");
         List<String> splitList = Arrays.asList(splitArray);
         return Lists.transform(splitList, pConversion);
+    }
+
+    @Override
+    public void onSuccess(int pValue) {
+        displayMessage(String.format("Integer '%1$d' successfuly saved!", pValue));
+    }
+
+    @Override
+    public void onSuccess(String pValue) {
+        displayMessage(String.format("String '%1$s' successfuly saved!", pValue));
+    }
+
+    @Override
+    public void onSuccess(SColor pValue) {
+        displayMessage(String.format("Color '%1$s' successfuly saved!", pValue));
     }
 }

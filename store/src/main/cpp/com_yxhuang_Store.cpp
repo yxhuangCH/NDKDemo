@@ -11,6 +11,10 @@ static Store gStore;
 static jclass StringClass;
 static jclass ColorClass;
 
+static jmethodID MethodOnSuccessInt;
+static jmethodID MethodOnSuccessString;
+static jmethodID MethodOnSuccessColor;
+
 JNIEXPORT jint JNI_OnLoad(JavaVM* pVM, void* reserved){
     JNIEnv *env;
     if (pVM->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK){
@@ -28,6 +32,26 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* pVM, void* reserved){
     }
     ColorClass = (jclass) env->NewGlobalRef(ColorClassTmp);
     env->DeleteLocalRef(ColorClassTmp);
+
+    // Caches Methods
+    jclass StoreClass = env->FindClass("com/yxhuang/store/Store");
+    if (StoreClass == NULL){
+        abort();
+    }
+    MethodOnSuccessInt = env->GetMethodID(StoreClass, "onSuccess", "(I)V");
+    if (MethodOnSuccessInt == NULL){
+        abort();
+    }
+    MethodOnSuccessString = env->GetMethodID(StoreClass, "onSuccess", "(Ljava/lang/String;)V");
+    if (MethodOnSuccessString == NULL){
+        abort();
+    }
+    MethodOnSuccessColor = env->GetMethodID(StoreClass, "onSuccess", "(Lcom/yxhuang/store/SColor;)V");
+    if (MethodOnSuccessColor == NULL){
+        abort();
+    }
+    env->DeleteLocalRef(StoreClass);
+
     // Store initialization
     gStore.mLength = 0;
     return JNI_VERSION_1_6;
@@ -135,6 +159,8 @@ Java_com_yxhuang_store_Store_setString(JNIEnv* pEnv, jobject pThis, jstring pKey
         pEnv->GetStringUTFRegion(pString, 0, stringLength, entry->mValue.mString);
         // Append the null character for  string termination.
         entry->mValue.mString[stringLength] = '\0';
+
+        pEnv->CallVoidMethod(pThis, MethodOnSuccessString, pEnv->NewStringUTF(entry->mValue.mString));
     }
 }
 
@@ -155,6 +181,8 @@ Java_com_yxhuang_store_Store_setInteger(JNIEnv* pEnv, jobject pThis, jstring pKe
     if (entry != NULL){
         entry->mType = StoreType_Integer;
         entry->mValue.mInteger = pInteger;
+
+        pEnv->CallVoidMethod(pThis, MethodOnSuccessInt, entry->mValue.mInteger);
     }
 };
 
@@ -167,6 +195,8 @@ Java_com_yxhuang_store_Store_setColor(JNIEnv* pEnv, jobject pThis, jstring pKey,
         entry->mType = StoreType_Color;
         // 防止被回收，需要一个全局引用, 但是主要要释放
         entry->mValue.mSColor = pEnv->NewGlobalRef(pColor);
+
+        pEnv->CallVoidMethod(pThis, MethodOnSuccessColor, entry->mValue.mSColor);
     }
 }
 
