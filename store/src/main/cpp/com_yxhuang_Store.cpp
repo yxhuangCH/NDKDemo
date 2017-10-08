@@ -21,6 +21,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* pVM, void* reserved){
         abort();
     }
     StringClass = (jclass) env->NewGlobalRef(StringClassTmp);
+    // 获取 Java 类
     jclass ColorClassTmp = env->FindClass("com/yxhuang/store/SColor");
     if (ColorClassTmp == NULL){
         abort();
@@ -32,8 +33,13 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* pVM, void* reserved){
     return JNI_VERSION_1_6;
 }
 
-bool isEntryValid(JNIEnv *pEnv, StoreEntry *pEntry, StoreType pType){
-    return ((pEntry != NULL) && (pEntry->mType == pType));
+bool isEntryValid(JNIEnv* pEnv, StoreEntry *pEntry, StoreType pType){
+    if (pEntry == NULL){
+        throwNotExistingKeyException(pEnv);
+    } else if (pEntry->mType != pType){
+        throwInvalidTypeException(pEnv);
+    }
+    return !pEnv->ExceptionCheck();
 }
 
 StoreEntry* findEntry(JNIEnv* pEnv, Store* pStore, jstring pKey){
@@ -84,6 +90,11 @@ StoreEntry* allocateEntry(JNIEnv* pEnv, Store* pStore, jstring pKey){
     if (entry != NULL){
         releaseEntryValue(pEnv, entry);
     } else{
+        // Checks store can accept a new entry
+        if (pStore->mLength >= STORE_MAX_CAPACITY){
+            throwStoreFullException(pEnv);
+            return NULL;
+        }
         entry = pStore->mEntities + pStore->mLength;
         // Copies the new key into its final C string buffer.
         const char* tmpKey = pEnv->GetStringUTFChars(pKey, NULL);

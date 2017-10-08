@@ -17,6 +17,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
+import com.yxhuang.store.exception.InvalidTypeException;
+import com.yxhuang.store.exception.NotExistingKeyException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -91,25 +93,31 @@ public class PlaceholderFragment extends Fragment {
             return;
         }
 
-        switch (type){
-            case String:
-                mUIValueEdit.setText(mStore.getString(key));
-                break;
-            case Integer:
-                mUIValueEdit.setText(Integer.toString(mStore.getInteger(key)));
-                break;
-            case SColor:
-                mUIValueEdit.setText(mStore.getSColor(key).toString());
-                break;
-            case IntegerArray:
-                mUIValueEdit.setText(Ints.join(";", mStore.getIntegerArray(key)));
-                break;
-            case StringArray:
-                mUIValueEdit.setText(Joiner.on(";").join(mStore.getStringArray(key)));
-                break;
-            case ColorArray:
-                mUIValueEdit.setText(Joiner.on(";").join(mStore.getColorArray(key)));
-                break;
+        try {
+            switch (type){
+                case String:
+                    mUIValueEdit.setText(mStore.getString(key));
+                    break;
+                case Integer:
+                    mUIValueEdit.setText(Integer.toString(mStore.getInteger(key)));
+                    break;
+                case SColor:
+                    mUIValueEdit.setText(mStore.getSColor(key).toString());
+                    break;
+                case IntegerArray:
+                    mUIValueEdit.setText(Ints.join(";", mStore.getIntegerArray(key)));
+                    break;
+                case StringArray:
+                    mUIValueEdit.setText(Joiner.on(";").join(mStore.getStringArray(key)));
+                    break;
+                case ColorArray:
+                    mUIValueEdit.setText(Joiner.on(";").join(mStore.getColorArray(key)));
+                    break;
+            }
+        } catch (NotExistingKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidTypeException e) {
+            e.printStackTrace();
         }
     }
 
@@ -124,7 +132,7 @@ public class PlaceholderFragment extends Fragment {
         }
 
         try {
-            switch (type){
+            switch (type) {
                 case String:
                     mStore.setString(key, value);
                     break;
@@ -157,6 +165,8 @@ public class PlaceholderFragment extends Fragment {
                     mStore.setColorArray(key, idList.toArray(new SColor[idList.size()]));
                     break;
             }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
             displayMessage("Incorrect value");

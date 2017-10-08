@@ -41,4 +41,30 @@ typedef struct {
     StoreEntry mEntities[STORE_MAX_CAPACITY];
     int32_t mLength;
 } Store;
+
+
+void throwInvalidTypeException(JNIEnv* pEnv){
+    jclass clazz = pEnv->FindClass("com/yxhuang/store/exception/InvalidTypeException");
+    if (clazz != NULL){
+        pEnv->ThrowNew(clazz, "Invalid type.");
+    }
+    pEnv->DeleteLocalRef(clazz);
+}
+
+void throwNotExistingKeyException(JNIEnv* pEnv){
+    jclass clazz = pEnv->FindClass("com/yxhuang/store/exception/NotExistingKeyException");
+    if (clazz != NULL){
+        pEnv->ThrowNew(clazz, "Key does not exist.");
+    }
+    pEnv->DeleteLocalRef(clazz);
+}
+
+void throwStoreFullException(JNIEnv* pEnv){
+    jclass clazz = pEnv->FindClass("com/yxhuang/store/exception/StoreFullException");
+    if (clazz != NULL){
+        pEnv->ThrowNew(clazz, "Store full.");
+    }
+    pEnv->DeleteLocalRef(clazz);
+}
+
 #endif //NDKPROJECT_STORE_H
