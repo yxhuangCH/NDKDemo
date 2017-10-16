@@ -47,6 +47,9 @@ public class Store implements StoreListener {
     public native void setColorArray(String pKey, SColor[] pColorArray);
     public native SColor[] getColorArray(String pKey) throws NotExistingKeyException, InvalidTypeException;
 
+    public native long startWatcher();
+    public native void stopWatcher(long pPointer);
+
     @Override
     public void onSuccess(int pValue) {
         mListener.onSuccess(pValue);

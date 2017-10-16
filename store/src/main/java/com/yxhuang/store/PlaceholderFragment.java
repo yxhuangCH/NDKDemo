@@ -32,7 +32,9 @@ import java.util.regex.Pattern;
  */
 
 public class PlaceholderFragment extends Fragment implements StoreListener{
-    private Store mStore;
+//    private Store mStore;
+    private StoreThreadSafe mStore;
+    private long mWatcher;
 
     private View mRootView;
     private TextView mTvContent;
@@ -50,7 +52,8 @@ public class PlaceholderFragment extends Fragment implements StoreListener{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mStore = new Store(this);
+//        mStore = new Store(this);
+        mStore = new StoreThreadSafe(this);
     }
 
     @Nullable
@@ -210,5 +213,17 @@ public class PlaceholderFragment extends Fragment implements StoreListener{
     @Override
     public void onSuccess(SColor pValue) {
         displayMessage(String.format("Color '%1$s' successfuly saved!", pValue));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mWatcher = mStore.startWatcher();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mStore.stopWatcher(mWatcher);
     }
 }

@@ -111,6 +111,25 @@ JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_setColorArray
  */
 JNIEXPORT jobjectArray JNICALL Java_com_yxhuang_store_Store_getColorArray
         (JNIEnv *, jobject, jstring);
+
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    startWatcher
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_com_yxhuang_store_Store_startWatcher
+        (JNIEnv *, jobject);
+
+/*
+ * Class:     com_yxhuang_store_Store
+ * Method:    stopWatcher
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_yxhuang_store_Store_stopWatcher
+        (JNIEnv *, jobject, jlong);
+
+
 #ifdef __cplusplus
 }
 #endif

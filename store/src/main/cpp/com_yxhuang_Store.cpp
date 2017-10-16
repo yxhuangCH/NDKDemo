@@ -5,7 +5,7 @@
 #include <string.h>
 #include "com_yxhuang_store_Store.h"
 #include "Store.h"
-#include <cstdint>
+#include <unistd.h>
 
 static Store gStore;
 static jclass StringClass;
@@ -14,6 +14,8 @@ static jclass ColorClass;
 static jmethodID MethodOnSuccessInt;
 static jmethodID MethodOnSuccessString;
 static jmethodID MethodOnSuccessColor;
+
+static jobject gLock;
 
 JNIEXPORT jint JNI_OnLoad(JavaVM* pVM, void* reserved){
     JNIEnv *env;
@@ -51,6 +53,31 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* pVM, void* reserved){
         abort();
     }
     env->DeleteLocalRef(StoreClass);
+
+    jclass ObjectClass = env->FindClass("java/lang/Object");
+    if (ObjectClass == NULL){
+        abort();
+    }
+    jmethodID ObjectConstructor = env->GetMethodID(ObjectClass, "<init>", "()V");
+    if (ObjectConstructor == NULL){
+        abort();
+    }
+    // 创建 java 对象
+    jobject lockTmp = env->NewObject(ObjectClass, ObjectConstructor);
+    env->DeleteLocalRef(ObjectClass);
+    gLock = env->NewGlobalRef(lockTmp);
+    env->DeleteLocalRef(lockTmp);
+
+    jclass StoreThreadSafeClass = env->FindClass("com/yxhuang/store/StoreThreadSafe");
+    if (StoreThreadSafeClass == NULL){
+        abort();
+    }
+    jfieldID lockField = env->GetStaticFieldID(StoreThreadSafeClass, "LOCK", "Ljava/lang/Object");
+    if (lockField == NULL){
+        abort();
+    }
+    env->SetStaticObjectField(StoreThreadSafeClass, lockField, gLock);
+    env->DeleteLocalRef(StoreThreadSafeClass);
 
     // Store initialization
     gStore.mLength = 0;
@@ -315,5 +342,23 @@ Java_com_yxhuang_store_Store_getColorArray(JNIEnv* pEnv, jobject pThis, jstring 
     } else{
         return NULL;
     }
+}
 
+
+JNIEXPORT jlong JNICALL
+Java_com_yxhuang_store_Store_startWatcher(JNIEnv* pEnv, jobject pThis){
+    JavaVM* javaVM;
+    // Caches the VM
+    if (pEnv->GetJavaVM(&javaVM) != JNI_OK){
+        abort();
+    }
+    // Launches the background thread.
+    StoreWatcher* watcher = startWatcher(javaVM, &gStore, gLock);
+    return (jlong) watcher;
+}
+
+
+JNIEXPORT void JNICALL
+Java_com_yxhuang_store_Store_stopWatcher(JNIEnv* pEnv, jobject pThis, jlong pWatcher){
+    storepWatcher((StoreWatcher *) pWatcher);
 }
