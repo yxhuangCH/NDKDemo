@@ -1,2 +1,4 @@
 # NDKDemo
-《Android NDK Beginner's Guide》 书中的代码
+《Android NDK Beginner's Guide(Second Edition)》 code with Android studio
+
+
