@@ -33,6 +33,14 @@ add_library(droid_blaster
           STATIC
           src/main/cpp/DroidBlaster.cpp)
 
+add_library(graphics_manager
+            STATIC
+            src/main/cpp/GraphicsManager.cpp)
+
+add_library(ship
+            STATIC
+            src/main/cpp/ship.cpp)
+
 # 指定头文件 .h 路径
 # Specifies a path to native header files.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
@@ -59,6 +67,8 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
                        droidblaster
                        droid_blaster
+                       ship
+                       graphics_manager
                        event_loop
                        blaster_log
                        native_app_glue

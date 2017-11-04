@@ -4,6 +4,8 @@
 #include "ActivityHandler.hpp"
 #include "EventLoop.hpp"
 #include "Types.hpp"
+#include "GraphicsManager.hpp"
+#include "Ship.hpp"
 
 class DroidBlaster : public ActivityHandler{
 public:
@@ -32,6 +34,9 @@ protected:
 
 private:
     EventLoop mEventLoop;
+
+    GraphicsManager mGraphicsManager;
+    Ship mShip;
 };
 
 #endif
