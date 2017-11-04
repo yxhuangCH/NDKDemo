@@ -1,1 +1,1 @@
-include ':app', ':store', ':livecamera'
+include ':app', ':store', ':droidblaster', ':ufotapattack'

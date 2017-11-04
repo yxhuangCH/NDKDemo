@@ -9,8 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/livecamera" />
+            <option value="$PROJECT_DIR$/droidblaster" />
             <option value="$PROJECT_DIR$/store" />
+            <option value="$PROJECT_DIR$/ufotapattack" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
