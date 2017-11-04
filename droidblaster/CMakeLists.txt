@@ -29,6 +29,9 @@ add_library(native_app_glue
           STATIC
           ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 
+add_library(droid_blaster
+          STATIC
+          src/main/cpp/DroidBlaster.cpp)
 
 # 指定头文件 .h 路径
 # Specifies a path to native header files.
@@ -55,6 +58,7 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( # Specifies the target library.
                        droidblaster
+                       droid_blaster
                        event_loop
                        blaster_log
                        native_app_glue
