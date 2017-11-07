@@ -16,7 +16,7 @@ private:
 
     void processAppEvent(int32_t pCommand);
 
-    static void callback_appEvent(android_app * pApplication, int32_t pCommand);
+    static void callback_appEvent(android_app *pApplication, int32_t pCommand);
 
 private:
     android_app *mApplication;

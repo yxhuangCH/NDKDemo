@@ -50,7 +50,8 @@ void EventLoop::run() {
 void EventLoop::activate(){
     // Enables activity only if window is avaiable.
     if (!mEnabled && mApplication->window != NULL){
-        mQuit = false; mEnabled = true;
+        mQuit = false;
+        mEnabled = true;
         if (mActivityHandler.onActivate() != STATUS_OK){
             goto ERROR;
         }

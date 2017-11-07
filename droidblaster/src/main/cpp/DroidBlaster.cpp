@@ -41,7 +41,7 @@ void DroidBlaster ::onDeactivate() {
 }
 
 status DroidBlaster::onStep() {
-//    Log::info("Starting step");
+    Log::info("Starting step");
 //    usleep(30000);
 //    Log::info("Stepping done");
 //    return STATUS_OK;

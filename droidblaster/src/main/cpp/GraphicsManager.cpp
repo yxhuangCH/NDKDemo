@@ -41,6 +41,7 @@ status GraphicsManager::start() {
     if (ANativeWindow_lock(mApplication->window, &windowBuffer, NULL) >= 0){
         mRenderHeight = windowBuffer.height;
         mRenderWidth = windowBuffer.width;
+        ANativeWindow_unlockAndPost(mApplication->window);
     } else {
         Log::error("Error while locking window.");
         return STATUS_KO;
@@ -75,23 +76,16 @@ status GraphicsManager::update() {
         // clips coordinates.
         if (rightX < 0 || leftX > maxX || rightY < 0 || rightY > maxY) continue;
 
-        if (leftX < 0){
-            leftX = 0;
-        } else if (rightX > maxX){
-            rightX = maxX;
-        }
-
-        if (leftY < 0){
-            leftY = 0;
-        } else if (rightY > maxY){
-            rightY == maxY;
-        }
+        if (leftX < 0) leftX = 0;
+        else if (rightX > maxX) rightX = maxX;
+        if (leftY < 0) leftY = 0;
+        else if (rightY > maxY) rightY - maxY;
 
         // Draws a rectangle.
         uint32_t *line = (uint32_t*) windowBuffer.bits + windowBuffer.stride * leftY;
-        for (int iY = leftY; iY <= rightY; ++iY) {
-            for (int iX = leftX; iX <= rightX; ++iX) {
-                line[iX] = 0X0000FF;  // Red color
+        for (int iY = leftY; iY <= rightY; iY++) {
+            for (int iX = leftX; iX <= rightX; iX++) {
+                line[iX] = 0X000000FF; //Red Color.
             }
             line = line + windowBuffer.stride;
         }
